@@ -1,7 +1,10 @@
 {
   "name": "Battleship",
   "devDependencies": {
-    "@usebruno/cli": "^2.15.1"
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "@usebruno/cli": "^2.15.1",
+    "husky": "^9.1.7"
   },
   "scripts": {
     "docker:build": "docker stop Battleship-container || true && docker rm Battleship-container || true && docker build -t Battleship . --progress=plain",
@@ -9,6 +12,7 @@
     "docker:stop": "docker stop Battleship-container",
     "docker:exec": "docker exec -it Battleship-container /bin/sh",
     "test:smoke": "curl -s http://localhost:8080/health | jq .",
-    "test:integration": "cd api/collection/Battleship && bru run"
+    "test:integration": "cd api/collection/Battleship && bru run",
+    "prepare": "husky"
   }
 }
