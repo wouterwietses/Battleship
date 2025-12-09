@@ -1,0 +1,14 @@
+.build/
+.git/
+.github/
+.husky/
+.swiftpm/
+node_modules/
+.gitignore
+BACKLOG.md
+commitlint.config.mjs
+NOTES.md
+package-lock.json
+package.json
+README.md
+TECHDEBT.md
