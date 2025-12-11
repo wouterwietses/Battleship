@@ -5,9 +5,16 @@ import Testing
 struct EmptyBoardTests {
     @Test("Should display water at location:", arguments: XAxis.allCases, YAxis.allCases)
     func shouldDisplayWaterAtLocationA1(xAxis: XAxis, yAxis: YAxis) async throws {
-        let board = BattleshipBoard()
+        let board = BattleshipBoard(playerName: "")
 
         let value = board.value(at: Coordinate(x: xAxis, y: yAxis))
         #expect(value == .water)
+    }
+
+    @Test("Should display player name")
+    func shouldDisplayPlayerName() async throws {
+        let board = BattleshipBoard(playerName: "Player 1")
+
+        #expect(board.playerName == "Player 1")
     }
 }

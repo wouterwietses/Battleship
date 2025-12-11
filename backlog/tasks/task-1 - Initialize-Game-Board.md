@@ -22,7 +22,7 @@ So that I can visualize the battlefield
 <!-- AC:BEGIN -->
 - [x] #1 Display a 10x10 grid with coordinate labels (A-J, 1-10)
 - [x] #2 Show water using 🌊 emoji for all cells
-- [ ] #3 Display player's board clearly labeled
+- [x] #3 Display player's board clearly labeled
 - [ ] #4 Exit game with a command
 <!-- AC:END -->
 

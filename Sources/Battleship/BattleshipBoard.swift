@@ -20,6 +20,8 @@ enum CellValue {
 }
 
 struct BattleshipBoard {
+    let playerName: String
+
     func value(at _: Coordinate) -> CellValue {
         .water
     }
