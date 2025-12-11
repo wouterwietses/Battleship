@@ -4,7 +4,7 @@ title: Initialize Game Board
 status: In Progress
 assignee: []
 created_date: '2025-12-09 07:54'
-updated_date: '2025-12-11 07:15'
+updated_date: '2025-12-11 07:37'
 labels: []
 dependencies: []
 ordinal: 1000
@@ -20,8 +20,8 @@ So that I can visualize the battlefield
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Display a 10x10 grid with coordinate labels (A-J, 1-10)
-- [ ] #2 Show water using 🌊 emoji for all cells
+- [x] #1 Display a 10x10 grid with coordinate labels (A-J, 1-10)
+- [x] #2 Show water using 🌊 emoji for all cells
 - [ ] #3 Display player's board clearly labeled
 - [ ] #4 Exit game with a command
 <!-- AC:END -->
