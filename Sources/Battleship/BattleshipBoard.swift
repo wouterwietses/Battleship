@@ -1,16 +1,18 @@
-enum Latitude: CaseIterable {
+enum XAxis: CaseIterable {
     case one, two, three, four, five, six, seven, eight, nine, ten
 }
 
-enum Longitude: CaseIterable {
+enum YAxis: CaseIterable {
     // swiftlint:disable identifier_name
     case A, B, C, D, E, F, G, H, I, J
     // swiftlint:enable identifier_name
 }
 
 struct Coordinate {
-    let latitude: Latitude
-    let longitude: Longitude
+    // swiftlint:disable identifier_name
+    let x: XAxis
+    let y: YAxis
+    // swiftlint:enable identifier_name
 }
 
 enum CellValue {
