@@ -1,10 +1,10 @@
 ---
 id: task-1
 title: Initialize Game Board
-status: In Progress
+status: Done
 assignee: []
 created_date: '2025-12-09 07:54'
-updated_date: '2025-12-11 07:37'
+updated_date: '2026-01-27 08:27'
 labels: []
 dependencies: []
 ordinal: 1000
