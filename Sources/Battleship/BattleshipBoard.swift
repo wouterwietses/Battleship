@@ -29,11 +29,11 @@ enum CellValue {
 }
 
 enum ShipType {
-    case carrier
+    case carrier, battleship
 }
 
 enum Orientation {
-    case horizontal
+    case horizontal, vertical
 }
 
 final class BattleshipBoard {
@@ -49,11 +49,19 @@ final class BattleshipBoard {
         grid[coordinate] ?? .water
     }
 
-    func place(ship _: ShipType, at _: Coordinate, orientation _: Orientation) {
-        grid[Coordinate(x: .one, y: .A)] = .ship
-        grid[Coordinate(x: .two, y: .A)] = .ship
-        grid[Coordinate(x: .three, y: .A)] = .ship
-        grid[Coordinate(x: .four, y: .A)] = .ship
-        grid[Coordinate(x: .five, y: .A)] = .ship
+    func place(ship: ShipType, at _: Coordinate, orientation _: Orientation) {
+        if ship == .carrier {
+            grid[Coordinate(x: .one, y: .A)] = .ship
+            grid[Coordinate(x: .two, y: .A)] = .ship
+            grid[Coordinate(x: .three, y: .A)] = .ship
+            grid[Coordinate(x: .four, y: .A)] = .ship
+            grid[Coordinate(x: .five, y: .A)] = .ship
+        }
+        if ship == .battleship {
+            grid[Coordinate(x: .one, y: .A)] = .ship
+            grid[Coordinate(x: .one, y: .B)] = .ship
+            grid[Coordinate(x: .one, y: .C)] = .ship
+            grid[Coordinate(x: .one, y: .D)] = .ship
+        }
     }
 }

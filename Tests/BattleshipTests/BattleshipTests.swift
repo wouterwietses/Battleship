@@ -29,24 +29,40 @@ struct PlaceShipArguments {
 
 @Suite("As a player I want to place my fleet on the board So that I can prepare for battle")
 struct PlaceShipsTests {
-    @Test("Should place ship on the board", arguments: [
-        PlaceShipArguments(
-            shipType: .carrier,
-            coordinate: Coordinate(x: .one, y: .A),
-            orientation: .horizontal,
-            expectedCoordinates: [
-                Coordinate(x: .one, y: .A),
-                Coordinate(x: .two, y: .A),
-                Coordinate(x: .three, y: .A),
-                Coordinate(x: .four, y: .A),
-                Coordinate(x: .five, y: .A)
-            ],
-        )
-    ])
+    @Test(
+        "Should place ship on the board",
+        arguments: [
+            PlaceShipArguments(
+                shipType: .carrier,
+                coordinate: Coordinate(x: .one, y: .A),
+                orientation: .horizontal,
+                expectedCoordinates: [
+                    Coordinate(x: .one, y: .A),
+                    Coordinate(x: .two, y: .A),
+                    Coordinate(x: .three, y: .A),
+                    Coordinate(x: .four, y: .A),
+                    Coordinate(x: .five, y: .A)
+                ],
+            ),
+            PlaceShipArguments(
+                shipType: .battleship,
+                coordinate: Coordinate(x: .one, y: .A),
+                orientation: .vertical,
+                expectedCoordinates: [
+                    Coordinate(x: .one, y: .A),
+                    Coordinate(x: .one, y: .B),
+                    Coordinate(x: .one, y: .C),
+                    Coordinate(x: .one, y: .D)
+                ],
+            )
+        ],
+    )
     func placeCarrier(arguments: PlaceShipArguments) async throws {
         let board = BattleshipBoard(playerName: "Player 1")
 
-        board.place(ship: arguments.shipType, at: arguments.coordinate, orientation: arguments.orientation)
+        board.place(
+            ship: arguments.shipType, at: arguments.coordinate, orientation: arguments.orientation,
+        )
 
         for coordinate in arguments.expectedCoordinates {
             let value = board.value(at: coordinate)
