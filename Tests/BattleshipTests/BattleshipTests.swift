@@ -20,22 +20,35 @@ struct EmptyBoardTests {
     }
 }
 
+struct PlaceShipArguments {
+    let shipType: ShipType
+    let coordinate: Coordinate
+    let orientation: Orientation
+    let expectedCoordinates: [Coordinate]
+}
+
 @Suite("As a player I want to place my fleet on the board So that I can prepare for battle")
 struct PlaceShipsTests {
-    @Test
-    func placeCarrier() async throws {
+    @Test("Should place ship on the board", arguments: [
+        PlaceShipArguments(
+            shipType: .carrier,
+            coordinate: Coordinate(x: .one, y: .A),
+            orientation: .horizontal,
+            expectedCoordinates: [
+                Coordinate(x: .one, y: .A),
+                Coordinate(x: .two, y: .A),
+                Coordinate(x: .three, y: .A),
+                Coordinate(x: .four, y: .A),
+                Coordinate(x: .five, y: .A)
+            ],
+        )
+    ])
+    func placeCarrier(arguments: PlaceShipArguments) async throws {
         let board = BattleshipBoard(playerName: "Player 1")
 
-        board.place(ship: .carrier, at: Coordinate(x: .one, y: .A), orientation: .horizontal)
+        board.place(ship: arguments.shipType, at: arguments.coordinate, orientation: arguments.orientation)
 
-        let coordinates = [
-            Coordinate(x: .one, y: .A),
-            Coordinate(x: .two, y: .A),
-            Coordinate(x: .three, y: .A),
-            Coordinate(x: .four, y: .A),
-            Coordinate(x: .five, y: .A)
-        ]
-        for coordinate in coordinates {
+        for coordinate in arguments.expectedCoordinates {
             let value = board.value(at: coordinate)
             #expect(value == .ship)
         }
