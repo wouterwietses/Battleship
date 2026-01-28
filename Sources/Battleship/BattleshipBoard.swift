@@ -41,6 +41,11 @@ final class BattleshipBoard {
 
     private var grid: [Coordinate: CellValue] = [:]
 
+    private let shipLenghts: [ShipType: Int] = [
+        .carrier: 5,
+        .battleship: 4
+    ]
+
     init(playerName: String) {
         self.playerName = playerName
     }
@@ -49,19 +54,45 @@ final class BattleshipBoard {
         grid[coordinate] ?? .water
     }
 
-    func place(ship: ShipType, at _: Coordinate, orientation _: Orientation) {
-        if ship == .carrier {
-            grid[Coordinate(x: .one, y: .A)] = .ship
-            grid[Coordinate(x: .two, y: .A)] = .ship
-            grid[Coordinate(x: .three, y: .A)] = .ship
-            grid[Coordinate(x: .four, y: .A)] = .ship
-            grid[Coordinate(x: .five, y: .A)] = .ship
+    func place(ship: ShipType, at coordinate: Coordinate, orientation: Orientation) {
+        let coordinates = coordinatesForShipPlacement(
+            ship: ship,
+            at: coordinate,
+            orientation: orientation,
+        )
+
+        for coordinate in coordinates {
+            grid[coordinate] = .ship
         }
-        if ship == .battleship {
-            grid[Coordinate(x: .one, y: .A)] = .ship
-            grid[Coordinate(x: .one, y: .B)] = .ship
-            grid[Coordinate(x: .one, y: .C)] = .ship
-            grid[Coordinate(x: .one, y: .D)] = .ship
+    }
+
+    private func coordinatesForShipPlacement(
+        ship: ShipType,
+        at coordinate: Coordinate,
+        orientation: Orientation,
+    ) -> [Coordinate] {
+        guard let length = shipLenghts[ship] else {
+            return []
         }
+
+        var coordinates: [Coordinate] = []
+
+        for lengthIndex in 0 ..< length {
+            switch orientation {
+            case .horizontal:
+                if let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) {
+                    coordinates.append(Coordinate(x: newX, y: coordinate.y))
+                }
+            case .vertical:
+                let allYAxes = YAxis.allCases
+                if let currentIndex = allYAxes.firstIndex(of: coordinate.y),
+                   currentIndex + lengthIndex < allYAxes.count {
+                    let newY = allYAxes[currentIndex + lengthIndex]
+                    coordinates.append(Coordinate(x: coordinate.x, y: newY))
+                }
+            }
+        }
+
+        return coordinates
     }
 }
