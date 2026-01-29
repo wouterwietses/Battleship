@@ -64,6 +64,16 @@ struct PlaceShipsTests {
                     Coordinate(x: .two, y: .A),
                     Coordinate(x: .three, y: .A)
                 ],
+            ),
+            PlaceShipArguments(
+                shipType: .submarine,
+                coordinate: Coordinate(x: .one, y: .A),
+                orientation: .vertical,
+                expectedCoordinates: [
+                    Coordinate(x: .one, y: .A),
+                    Coordinate(x: .one, y: .B),
+                    Coordinate(x: .one, y: .C)
+                ],
             )
         ],
     )
