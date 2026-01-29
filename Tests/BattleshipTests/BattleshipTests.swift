@@ -74,6 +74,15 @@ struct PlaceShipsTests {
                     Coordinate(x: .one, y: .B),
                     Coordinate(x: .one, y: .C)
                 ],
+            ),
+            PlaceShipArguments(
+                shipType: .destroyer,
+                coordinate: Coordinate(x: .one, y: .A),
+                orientation: .horizontal,
+                expectedCoordinates: [
+                    Coordinate(x: .one, y: .A),
+                    Coordinate(x: .two, y: .A)
+                ],
             )
         ],
     )

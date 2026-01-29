@@ -29,7 +29,7 @@ enum CellValue {
 }
 
 enum ShipType {
-    case carrier, battleship, cruiser, submarine
+    case carrier, battleship, cruiser, submarine, destroyer
 }
 
 enum Orientation {
@@ -45,7 +45,8 @@ final class BattleshipBoard {
         .carrier: 5,
         .battleship: 4,
         .cruiser: 3,
-        .submarine: 3
+        .submarine: 3,
+        .destroyer: 2
     ]
 
     init(playerName: String) {
