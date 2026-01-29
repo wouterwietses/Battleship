@@ -93,11 +93,14 @@ final class BattleshipBoard {
                 coordinates.append(Coordinate(x: newX, y: coordinate.y))
             case .vertical:
                 let allYAxes = YAxis.allCases
-                if let currentIndex = allYAxes.firstIndex(of: coordinate.y),
-                   currentIndex + lengthIndex < allYAxes.count {
-                    let newY = allYAxes[currentIndex + lengthIndex]
-                    coordinates.append(Coordinate(x: coordinate.x, y: newY))
+                guard let currentIndex = allYAxes.firstIndex(of: coordinate.y),
+                      currentIndex + lengthIndex < allYAxes.count
+                else {
+                    throw PlacementError.outOfBounds
                 }
+
+                let newY = allYAxes[currentIndex + lengthIndex]
+                coordinates.append(Coordinate(x: coordinate.x, y: newY))
             }
         }
 

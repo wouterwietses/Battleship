@@ -111,4 +111,17 @@ struct PlaceShipsTests {
             )
         }
     }
+
+    @Test("Should not place ship out of bounds for vertical placement")
+    func shouldNotPlaceShipOutOfBoundsVertically() async throws {
+        let board = BattleshipBoard(playerName: "Player 1")
+
+        #expect(throws: PlacementError.outOfBounds) {
+            try board.place(
+                ship: .destroyer,
+                at: Coordinate(x: .ten, y: .J),
+                orientation: .vertical,
+            )
+        }
+    }
 }
