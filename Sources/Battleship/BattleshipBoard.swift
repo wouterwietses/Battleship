@@ -36,6 +36,10 @@ enum Orientation {
     case horizontal, vertical
 }
 
+enum PlacementError: Error {
+    case outOfBounds
+}
+
 final class BattleshipBoard {
     let playerName: String
 
@@ -57,8 +61,8 @@ final class BattleshipBoard {
         grid[coordinate] ?? .water
     }
 
-    func place(ship: ShipType, at coordinate: Coordinate, orientation: Orientation) {
-        let coordinates = coordinatesForShipPlacement(
+    func place(ship: ShipType, at coordinate: Coordinate, orientation: Orientation) throws {
+        let coordinates = try coordinatesForShipPlacement(
             ship: ship,
             at: coordinate,
             orientation: orientation,
@@ -73,7 +77,7 @@ final class BattleshipBoard {
         ship: ShipType,
         at coordinate: Coordinate,
         orientation: Orientation,
-    ) -> [Coordinate] {
+    ) throws -> [Coordinate] {
         guard let length = shipLenghts[ship] else {
             return []
         }
@@ -83,9 +87,10 @@ final class BattleshipBoard {
         for lengthIndex in 0 ..< length {
             switch orientation {
             case .horizontal:
-                if let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) {
-                    coordinates.append(Coordinate(x: newX, y: coordinate.y))
+                guard let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) else {
+                    throw PlacementError.outOfBounds
                 }
+                coordinates.append(Coordinate(x: newX, y: coordinate.y))
             case .vertical:
                 let allYAxes = YAxis.allCases
                 if let currentIndex = allYAxes.firstIndex(of: coordinate.y),

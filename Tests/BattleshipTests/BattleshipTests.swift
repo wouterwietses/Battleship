@@ -89,13 +89,26 @@ struct PlaceShipsTests {
     func placeCarrier(arguments: PlaceShipArguments) async throws {
         let board = BattleshipBoard(playerName: "Player 1")
 
-        board.place(
+        try board.place(
             ship: arguments.shipType, at: arguments.coordinate, orientation: arguments.orientation,
         )
 
         for coordinate in arguments.expectedCoordinates {
             let value = board.value(at: coordinate)
             #expect(value == .ship)
+        }
+    }
+
+    @Test("Should not place ship out of bounds for horizontal placement")
+    func shouldNotPlaceShipOutOfBounds() async throws {
+        let board = BattleshipBoard(playerName: "Player 1")
+
+        #expect(throws: PlacementError.outOfBounds) {
+            try board.place(
+                ship: .destroyer,
+                at: Coordinate(x: .ten, y: .J),
+                orientation: .horizontal,
+            )
         }
     }
 }
