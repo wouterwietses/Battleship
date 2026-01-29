@@ -114,4 +114,8 @@ struct PlaceShipsTests {
             )
         }
     }
+
+    @Test func shipsShouldNotOverlap() async throws {
+        #expect(Bool(false), "Add tests for overlapping ships")
+    }
 }
