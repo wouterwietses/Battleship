@@ -41,14 +41,6 @@ final class BattleshipBoard {
 
     private var grid: [Coordinate: CellValue] = [:]
 
-    private let shipLenghts: [ShipType: Int] = [
-        .carrier: 5,
-        .battleship: 4,
-        .cruiser: 3,
-        .submarine: 3,
-        .destroyer: 2
-    ]
-
     init(playerName: String) {
         self.playerName = playerName
     }
@@ -64,7 +56,7 @@ final class BattleshipBoard {
         grid[coordinate] = .ship
     }
 
-    func place(ship: ShipType, at coordinate: Coordinate, orientation: Orientation) throws {
+    func place(ship: any Ship, at coordinate: Coordinate, orientation: Orientation) throws {
         let coordinates = try coordinatesForShipPlacement(
             ship: ship,
             at: coordinate,
@@ -77,17 +69,13 @@ final class BattleshipBoard {
     }
 
     private func coordinatesForShipPlacement(
-        ship: ShipType,
+        ship: any Ship,
         at coordinate: Coordinate,
         orientation: Orientation,
     ) throws -> [Coordinate] {
-        guard let length = shipLenghts[ship] else {
-            return []
-        }
-
         var coordinates: [Coordinate] = []
 
-        for lengthIndex in 0 ..< length {
+        for lengthIndex in 0 ..< ship.length {
             switch orientation {
             case .horizontal:
                 guard let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) else {

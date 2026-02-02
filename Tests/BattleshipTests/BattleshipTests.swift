@@ -20,8 +20,8 @@ struct EmptyBoardTests {
     }
 }
 
-struct PlaceShipArguments {
-    let shipType: ShipType
+struct PlaceShipArguments: Sendable {
+    let ship: any Ship
     let coordinate: Coordinate
     let orientation: Orientation
     let expectedCoordinates: [Coordinate]
@@ -33,7 +33,7 @@ struct PlaceShipsTests {
         "Should place ship on the board",
         arguments: [
             PlaceShipArguments(
-                shipType: .carrier,
+                ship: Carrier(),
                 coordinate: Coordinate(x: .one, y: .A),
                 orientation: .horizontal,
                 expectedCoordinates: [
@@ -45,7 +45,7 @@ struct PlaceShipsTests {
                 ],
             ),
             PlaceShipArguments(
-                shipType: .battleship,
+                ship: Battleship(),
                 coordinate: Coordinate(x: .one, y: .A),
                 orientation: .vertical,
                 expectedCoordinates: [
@@ -56,7 +56,7 @@ struct PlaceShipsTests {
                 ],
             ),
             PlaceShipArguments(
-                shipType: .cruiser,
+                ship: Cruiser(),
                 coordinate: Coordinate(x: .one, y: .A),
                 orientation: .horizontal,
                 expectedCoordinates: [
@@ -66,7 +66,7 @@ struct PlaceShipsTests {
                 ],
             ),
             PlaceShipArguments(
-                shipType: .submarine,
+                ship: Submarine(),
                 coordinate: Coordinate(x: .one, y: .A),
                 orientation: .vertical,
                 expectedCoordinates: [
@@ -76,7 +76,7 @@ struct PlaceShipsTests {
                 ],
             ),
             PlaceShipArguments(
-                shipType: .destroyer,
+                ship: Destroyer(),
                 coordinate: Coordinate(x: .one, y: .A),
                 orientation: .horizontal,
                 expectedCoordinates: [
@@ -90,7 +90,7 @@ struct PlaceShipsTests {
         let board = BattleshipBoard(playerName: "Player 1")
 
         try board.place(
-            ship: arguments.shipType, at: arguments.coordinate, orientation: arguments.orientation,
+            ship: arguments.ship, at: arguments.coordinate, orientation: arguments.orientation,
         )
 
         for coordinate in arguments.expectedCoordinates {
@@ -108,7 +108,7 @@ struct PlaceShipsTests {
 
         #expect(throws: PlacementError.outOfBounds) {
             try board.place(
-                ship: .destroyer,
+                ship: Destroyer(),
                 at: Coordinate(x: .ten, y: .J),
                 orientation: orientation,
             )
@@ -119,13 +119,13 @@ struct PlaceShipsTests {
         let board = BattleshipBoard(playerName: "Player 1")
 
         try board.place(
-            ship: .destroyer,
+            ship: Destroyer(),
             at: Coordinate(x: .one, y: .A),
             orientation: .horizontal,
         )
         #expect(throws: PlacementError.overlappingShips) {
             try board.place(
-                ship: .carrier,
+                ship: Destroyer(),
                 at: Coordinate(x: .one, y: .A),
                 orientation: .vertical,
             )
