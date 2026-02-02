@@ -1,10 +1,10 @@
 ---
 id: task-2
 title: Place Ships on Board
-status: In Progress
+status: Done
 assignee: []
 created_date: '2025-12-09 08:13'
-updated_date: '2026-01-27 08:27'
+updated_date: '2026-02-02 08:29'
 labels: []
 dependencies: []
 ordinal: 1000
@@ -20,10 +20,10 @@ So that I can prepare for battle
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Place 5 ships: Carrier(5), Battleship(4), Cruiser(3), Submarine(3), Destroyer(2)
-- [ ] #2 Ships shown with 🚢 emoji
-- [ ] #3 Validate placement (no overlaps, within bounds)
-- [ ] #4 Support horizontal and vertical orientation
+- [x] #1 Place 5 ships: Carrier(5), Battleship(4), Cruiser(3), Submarine(3), Destroyer(2)
+- [x] #2 Ships shown with 🚢 emoji
+- [x] #3 Validate placement (no overlaps, within bounds)
+- [x] #4 Support horizontal and vertical orientation
 <!-- AC:END -->
 
 ## Implementation Notes
