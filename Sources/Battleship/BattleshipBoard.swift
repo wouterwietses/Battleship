@@ -62,7 +62,7 @@ final class BattleshipBoard {
     }
 
     private func placeShip(at coordinate: Coordinate) throws {
-        guard grid[coordinate] != .ship else {
+        guard value(at: coordinate) == .water else {
             throw PlacementError.overlappingShips
         }
         grid[coordinate] = .ship
