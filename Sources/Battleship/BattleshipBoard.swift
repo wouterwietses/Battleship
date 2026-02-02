@@ -61,6 +61,13 @@ final class BattleshipBoard {
         grid[coordinate] ?? .water
     }
 
+    private func placeShip(at coordinate: Coordinate) throws {
+        guard grid[coordinate] != .ship else {
+            throw PlacementError.overlappingShips
+        }
+        grid[coordinate] = .ship
+    }
+
     func place(ship: ShipType, at coordinate: Coordinate, orientation: Orientation) throws {
         let coordinates = try coordinatesForShipPlacement(
             ship: ship,
@@ -69,10 +76,7 @@ final class BattleshipBoard {
         )
 
         for coordinate in coordinates {
-            guard grid[coordinate] != .ship else {
-                throw PlacementError.overlappingShips
-            }
-            grid[coordinate] = .ship
+            try placeShip(at: coordinate)
         }
     }
 
