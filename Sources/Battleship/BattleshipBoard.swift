@@ -28,10 +28,6 @@ enum CellValue {
     case water, ship
 }
 
-enum ShipType {
-    case carrier, battleship, cruiser, submarine, destroyer
-}
-
 enum Orientation {
     case horizontal, vertical
 }
