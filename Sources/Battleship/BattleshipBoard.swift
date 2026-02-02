@@ -37,7 +37,7 @@ enum Orientation {
 }
 
 enum PlacementError: Error {
-    case outOfBounds
+    case outOfBounds, overlappingShips
 }
 
 final class BattleshipBoard {
@@ -69,6 +69,9 @@ final class BattleshipBoard {
         )
 
         for coordinate in coordinates {
+            guard grid[coordinate] != .ship else {
+                throw PlacementError.overlappingShips
+            }
             grid[coordinate] = .ship
         }
     }

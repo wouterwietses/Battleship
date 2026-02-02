@@ -116,6 +116,19 @@ struct PlaceShipsTests {
     }
 
     @Test func shipsShouldNotOverlap() async throws {
-        #expect(Bool(false), "Add tests for overlapping ships")
+        let board = BattleshipBoard(playerName: "Player 1")
+
+        try board.place(
+            ship: .destroyer,
+            at: Coordinate(x: .one, y: .A),
+            orientation: .horizontal,
+        )
+        #expect(throws: PlacementError.overlappingShips) {
+            try board.place(
+                ship: .carrier,
+                at: Coordinate(x: .one, y: .A),
+                orientation: .vertical,
+            )
+        }
     }
 }
