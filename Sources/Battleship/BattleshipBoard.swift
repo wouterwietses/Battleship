@@ -40,6 +40,7 @@ final class BattleshipBoard {
     let playerName: String
 
     private var grid: [Coordinate: CellValue] = [:]
+    private var trackingGrid: [Coordinate: ShotResult] = [:]
 
     init(playerName: String) {
         self.playerName = playerName
@@ -47,6 +48,10 @@ final class BattleshipBoard {
 
     func value(at coordinate: Coordinate) -> CellValue {
         grid[coordinate] ?? .water
+    }
+
+    func trackingBoardValue(at _: Coordinate) -> ShotResult? {
+        .miss
     }
 
     private func placeShip(at coordinate: Coordinate) throws {
