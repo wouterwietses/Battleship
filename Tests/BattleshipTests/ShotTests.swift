@@ -35,4 +35,52 @@ struct ShotTests {
         let value = board.trackingBoardValue(at: Coordinate(x: .five, y: .B))
         #expect(value == .miss)
     }
+
+    @Test(
+        """
+        Given the game has started with all ships placed
+        And one of the ship has a piece place on B5
+        When I fire at coordinate B5
+        Then the tracking board shows 💥 at B5
+        And I receive feedback "Hit!"
+        """,
+    )
+    func fireAndHit() async throws {
+        let board = BattleshipBoard(playerName: "Player 1")
+        try board.place(ship: Carrier(), at: Coordinate(x: .one, y: .A), orientation: .horizontal)
+        try board.place(
+            ship: Battleship(), at: Coordinate(x: .one, y: .B), orientation: .horizontal,
+        )
+        try board.place(ship: Cruiser(), at: Coordinate(x: .one, y: .C), orientation: .horizontal)
+        try board.place(ship: Submarine(), at: Coordinate(x: .one, y: .D), orientation: .horizontal)
+        try board.place(ship: Destroyer(), at: Coordinate(x: .one, y: .E), orientation: .horizontal)
+
+        let oponentBoard = BattleshipBoard(playerName: "Player 2")
+        try oponentBoard.place(
+            ship: Carrier(), at: Coordinate(x: .one, y: .A), orientation: .horizontal,
+        )
+        try oponentBoard.place(
+            ship: Battleship(), at: Coordinate(x: .one, y: .B), orientation: .horizontal,
+        )
+        try oponentBoard.place(
+            ship: Cruiser(), at: Coordinate(x: .one, y: .C), orientation: .horizontal,
+        )
+        try oponentBoard.place(
+            ship: Submarine(), at: Coordinate(x: .one, y: .D), orientation: .horizontal,
+        )
+        try oponentBoard.place(
+            ship: Destroyer(), at: Coordinate(x: .five, y: .B), orientation: .horizontal,
+        )
+
+        let game = BattleshipGame(
+            player1Board: board,
+            player2Board: oponentBoard,
+        )
+
+        // TODO: refactor Game and Board class. Board is an internal to the game.
+        let result = game.fire(at: Coordinate(x: .five, y: .B))
+        #expect(result == .hit)
+        let value = board.trackingBoardValue(at: Coordinate(x: .five, y: .B))
+        #expect(value == .hit)
+    }
 }

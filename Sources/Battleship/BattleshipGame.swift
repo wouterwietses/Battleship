@@ -1,5 +1,6 @@
 enum ShotResult {
     case miss
+    case hit
 }
 
 final class BattleshipGame {
