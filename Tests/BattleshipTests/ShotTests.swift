@@ -7,7 +7,12 @@ import Testing
 )
 struct ShotTests {
     @Test(
-        "Given the game has started with all ships placed When I fire at coordinate B5 Then the tracking board shows ❌ at B5 And I receive feedback Miss!",
+        """
+        Given the game has started with all ships placed
+        When I fire at coordinate B5
+        Then the tracking board shows ❌ at B5
+        And I receive feedback Miss!
+        """,
     )
     func fireAndMiss() async throws {
         let board = BattleshipBoard(playerName: "Player 1")
