@@ -1,17 +1,3 @@
-enum ShotResult: Equatable {
-    case miss
-    case hit
-    case sunk(shipName: String)
-}
-
-typealias Board = [Coordinate: CellValue]
-typealias TrackingBoard = [Coordinate: ShotResult]
-
-protocol PlayerState {
-    func currentState(name: String, board: Board, trackingBoard: TrackingBoard)
-    func displayMessage(_ message: String)
-}
-
 final class Player {
     private let state: any PlayerState
     private let name: String
