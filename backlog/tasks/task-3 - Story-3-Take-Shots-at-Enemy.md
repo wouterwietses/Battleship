@@ -13,7 +13,7 @@ ordinal: 1000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-As a player I want to fire at coordinates on the enemy board So that I can try to sink their ships
+As a playerI want to fire at coordinates on the enemy boardSo that I can try to sink their ships
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

@@ -3,16 +3,179 @@ enum ShotResult {
     case hit
 }
 
-final class BattleshipGame {
-    let player1Board: BattleshipBoard
-    let player2Board: BattleshipBoard
+// protocol Board {
+//     var grid: [Coordinate: CellValue] { get set }
+// }
 
-    init(player1Board: BattleshipBoard, player2Board: BattleshipBoard) {
-        self.player1Board = player1Board
-        self.player2Board = player2Board
+typealias Board = [Coordinate: CellValue]
+typealias TrackingBoard = [Coordinate: ShotResult]
+
+// protocol TrackingBoard {
+//     var grid: [Coordinate: ShotResult] { get set }
+// }
+
+// protocol PlayerOutput {
+//     var name: String { get }
+//     var board: Board { get }
+//     var trackingBoard: TrackingBoard { get }
+// }
+
+protocol PlayerState {
+    func currentState(name: String, board: Board, trackingBoard: TrackingBoard)
+}
+
+final class Player {
+    private let state: any PlayerState
+    private let name: String
+    private var board: Board {
+        didSet {
+            state.currentState(name: name, board: board, trackingBoard: trackingBoard)
+        }
     }
 
-    func fire(at _: Coordinate) -> ShotResult {
-        .miss
+    private var trackingBoard: TrackingBoard {
+        didSet {
+            state.currentState(name: name, board: board, trackingBoard: trackingBoard)
+        }
+    }
+
+    init(name: String, state: any PlayerState) {
+        self.name = name
+        board = [:]
+        trackingBoard = [:]
+        self.state = state
+        state.currentState(name: name, board: board, trackingBoard: trackingBoard)
+    }
+
+    func place(
+        ship: any Ship, at coordinate: Coordinate, orientation: Orientation,
+    ) throws {
+        let coordinates = try coordinatesForShipPlacement(
+            ship: ship,
+            at: coordinate,
+            orientation: orientation,
+        )
+
+        for coordinate in coordinates {
+            try placeShip(at: coordinate)
+        }
+    }
+
+    func value(at coordinate: Coordinate) -> CellValue {
+        board[coordinate] ?? .water
+    }
+
+    func receiveShot(at coordinate: Coordinate) -> ShotResult {
+        value(at: coordinate) == .ship ? .hit : .miss
+    }
+
+    func recordShot(at coordinate: Coordinate, result: ShotResult) {
+        trackingBoard[coordinate] = result
+    }
+
+    private func placeShip(at coordinate: Coordinate) throws {
+        guard value(at: coordinate) == .water else {
+            throw PlacementError.overlappingShips
+        }
+        board[coordinate] = .ship
+    }
+
+    private func coordinatesForShipPlacement(
+        ship: any Ship,
+        at coordinate: Coordinate,
+        orientation: Orientation,
+    ) throws -> [Coordinate] {
+        var coordinates: [Coordinate] = []
+
+        for lengthIndex in 0 ..< ship.length {
+            switch orientation {
+            case .vertical:
+                guard let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) else {
+                    throw PlacementError.outOfBounds
+                }
+                coordinates.append(Coordinate(x: newX, y: coordinate.y))
+            case .horizontal:
+                let allYAxes = YAxis.allCases
+                guard let currentIndex = allYAxes.firstIndex(of: coordinate.y),
+                      currentIndex + lengthIndex < allYAxes.count
+                else {
+                    throw PlacementError.outOfBounds
+                }
+
+                let newY = allYAxes[currentIndex + lengthIndex]
+                coordinates.append(Coordinate(x: coordinate.x, y: newY))
+            }
+        }
+
+        return coordinates
+    }
+}
+
+// final class GamePlayer: Player {
+//     let name: String
+//     let board: any Board
+//     let trackingBoard: any TrackingBoard
+
+//     init(name: String, board: any Board, trackingBoard: any TrackingBoard) {
+//         self.name = name
+//         self.board = board
+//         self.trackingBoard = trackingBoard
+//     }
+// }
+
+final class BattleshipGame {
+    private let player1: Player
+    private let player2: Player
+
+    init(player1: Player, player2: Player) {
+        self.player1 = player1
+        self.player2 = player2
+    }
+
+    // private func coordinatesForShipPlacement(
+    //     ship: any Ship,
+    //     at coordinate: Coordinate,
+    //     orientation: Orientation,
+    // ) throws -> [Coordinate] {
+    //     var coordinates: [Coordinate] = []
+
+    //     for lengthIndex in 0..<ship.length {
+    //         switch orientation {
+    //         case .horizontal:
+    //             guard let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) else {
+    //                 throw PlacementError.outOfBounds
+    //             }
+    //             coordinates.append(Coordinate(x: newX, y: coordinate.y))
+    //         case .vertical:
+    //             let allYAxes = YAxis.allCases
+    //             guard let currentIndex = allYAxes.firstIndex(of: coordinate.y),
+    //                 currentIndex + lengthIndex < allYAxes.count
+    //             else {
+    //                 throw PlacementError.outOfBounds
+    //             }
+
+    //             let newY = allYAxes[currentIndex + lengthIndex]
+    //             coordinates.append(Coordinate(x: coordinate.x, y: newY))
+    //         }
+    //     }
+
+    //     return coordinates
+    // }
+
+    // func value(at coordinate: Coordinate) -> CellValue {
+    //     grid[coordinate] ?? .water
+    // }
+
+    // private func placeShip(at coordinate: Coordinate) throws {
+    //     guard value(at: coordinate) == .water else {
+    //         throw PlacementError.overlappingShips
+    //     }
+    //     grid[coordinate] = .ship
+    // }
+
+    func fire(at coordinate: Coordinate) -> ShotResult {
+        let result = player2.receiveShot(at: coordinate)
+        player1.recordShot(at: coordinate, result: result)
+        return result
     }
 }

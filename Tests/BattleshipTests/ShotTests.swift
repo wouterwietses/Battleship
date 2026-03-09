@@ -1,10 +1,36 @@
+@testable import Battleship
 import Testing
 
-@testable import Battleship
+struct CoordinateParsingArguments {
+    let input: String
+    let expected: Coordinate
+}
 
-@Suite(
-    "As a player I want to fire at coordinates on the enemy board so that I can try to sink their ships",
-)
+struct CoordinateParsingTests {
+    @Test(
+        "Should parse coordinate string",
+        arguments: [
+            CoordinateParsingArguments(input: "B5", expected: Coordinate(x: .five, y: .B)),
+            CoordinateParsingArguments(input: "A1", expected: Coordinate(x: .one, y: .A)),
+            CoordinateParsingArguments(input: "J10", expected: Coordinate(x: .ten, y: .J))
+        ],
+    )
+    func parseCoordinate(arguments: CoordinateParsingArguments) throws {
+        let coordinate = try Coordinate(arguments.input)
+        #expect(coordinate == arguments.expected)
+    }
+
+    @Test(
+        "Should reject invalid coordinate string",
+        arguments: ["", "Z1", "A0", "A11", "1A", "AA"],
+    )
+    func rejectInvalidCoordinate(input: String) throws {
+        #expect(throws: CoordinateParsingError.self) {
+            try Coordinate(input)
+        }
+    }
+}
+
 struct ShotTests {
     @Test(
         """
@@ -14,73 +40,123 @@ struct ShotTests {
         And I receive feedback Miss!
         """,
     )
-    func fireAndMiss() async throws {
-        let board = BattleshipBoard(playerName: "Player 1")
-        try board.place(ship: Carrier(), at: Coordinate(x: .one, y: .A), orientation: .horizontal)
-        try board.place(
-            ship: Battleship(), at: Coordinate(x: .one, y: .B), orientation: .horizontal,
+    func fireAndMiss() {
+        let playerState = MockPlayerState()
+        let player1 = Player(
+            name: "Player 1",
+            state: playerState,
         )
-        try board.place(ship: Cruiser(), at: Coordinate(x: .one, y: .C), orientation: .horizontal)
-        try board.place(ship: Submarine(), at: Coordinate(x: .one, y: .D), orientation: .horizontal)
-        try board.place(ship: Destroyer(), at: Coordinate(x: .one, y: .E), orientation: .horizontal)
-
         let game = BattleshipGame(
-            player1Board: board,
-            player2Board: BattleshipBoard(playerName: "Player 2"),
+            player1: player1,
+            player2: Player(name: "Player 2", state: MockPlayerState()),
         )
+        // try player1.place(ship: Carrier(), at: Coordinate(x: .one, y: .A), orientation: .horizontal)
+        // try player1.place(
+        //     ship: Battleship(), at: Coordinate(x: .one, y: .B), orientation: .horizontal,
+        // )
+        // try player1.place(ship: Cruiser(), at: Coordinate(x: .one, y: .C), orientation: .horizontal)
+        // try player1.place(
+        //     ship: Submarine(), at: Coordinate(x: .one, y: .D), orientation: .horizontal)
+        // try player1.place(
+        //     ship: Destroyer(), at: Coordinate(x: .one, y: .E), orientation: .horizontal)
 
         let result = game.fire(at: Coordinate(x: .five, y: .B))
         #expect(result == .miss)
 
-        let value = board.trackingBoardValue(at: Coordinate(x: .five, y: .B))
-        #expect(value == .miss)
+        let board =
+            """
+            Trackingboard
+                A  B  C  D  E  F  G  H  I  J
+            1
+            2
+            3
+            4
+            5     ❌
+            6
+            7
+            8
+            9
+            10
+
+            Player 1
+                A  B  C  D  E  F  G  H  I  J
+            1  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            2  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            3  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            4  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            5  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            6  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            7  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            8  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            9  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            10 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            """
+
+        #expect(playerState.output == board)
     }
 
     @Test(
         """
         Given the game has started with all ships placed
-        And one of the ship has a piece place on B5
+        And one of the ship has a piece placed on B5
         When I fire at coordinate B5
         Then the tracking board shows 💥 at B5
         And I receive feedback "Hit!"
         """,
     )
-    func fireAndHit() async throws {
-        let board = BattleshipBoard(playerName: "Player 1")
-        try board.place(ship: Carrier(), at: Coordinate(x: .one, y: .A), orientation: .horizontal)
-        try board.place(
-            ship: Battleship(), at: Coordinate(x: .one, y: .B), orientation: .horizontal,
+    func fireAndHit() throws {
+        let playerState = MockPlayerState()
+        let player1 = Player(
+            name: "Player 1",
+            state: playerState,
         )
-        try board.place(ship: Cruiser(), at: Coordinate(x: .one, y: .C), orientation: .horizontal)
-        try board.place(ship: Submarine(), at: Coordinate(x: .one, y: .D), orientation: .horizontal)
-        try board.place(ship: Destroyer(), at: Coordinate(x: .one, y: .E), orientation: .horizontal)
-
-        let oponentBoard = BattleshipBoard(playerName: "Player 2")
-        try oponentBoard.place(
-            ship: Carrier(), at: Coordinate(x: .one, y: .A), orientation: .horizontal,
+        let player2 = Player(
+            name: "Player 2",
+            state: MockPlayerState(),
         )
-        try oponentBoard.place(
-            ship: Battleship(), at: Coordinate(x: .one, y: .B), orientation: .horizontal,
-        )
-        try oponentBoard.place(
-            ship: Cruiser(), at: Coordinate(x: .one, y: .C), orientation: .horizontal,
-        )
-        try oponentBoard.place(
-            ship: Submarine(), at: Coordinate(x: .one, y: .D), orientation: .horizontal,
-        )
-        try oponentBoard.place(
-            ship: Destroyer(), at: Coordinate(x: .five, y: .B), orientation: .horizontal,
+        try player2.place(
+            ship: Destroyer(),
+            at: Coordinate(x: .five, y: .B),
+            orientation: .horizontal,
         )
 
         let game = BattleshipGame(
-            player1Board: board,
-            player2Board: oponentBoard,
+            player1: player1,
+            player2: player2,
         )
 
-        // TODO: refactor Game and Board class. Board is an internal to the game.
         let result = game.fire(at: Coordinate(x: .five, y: .B))
         #expect(result == .hit)
-        let value = board.trackingBoardValue(at: Coordinate(x: .five, y: .B))
-        #expect(value == .hit)
+
+        let board =
+            """
+            Trackingboard
+                A  B  C  D  E  F  G  H  I  J
+            1
+            2
+            3
+            4
+            5     💥
+            6
+            7
+            8
+            9
+            10
+
+            Player 1
+                A  B  C  D  E  F  G  H  I  J
+            1  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            2  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            3  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            4  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            5  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            6  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            7  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            8  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            9  🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            10 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊 🌊
+            """
+
+        #expect(playerState.output == board)
     }
 }
