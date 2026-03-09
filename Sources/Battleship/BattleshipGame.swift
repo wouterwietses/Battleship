@@ -1,6 +1,7 @@
-enum ShotResult {
+enum ShotResult: Equatable {
     case miss
     case hit
+    case sunk(shipName: String)
 }
 
 typealias Board = [Coordinate: CellValue]
@@ -8,6 +9,7 @@ typealias TrackingBoard = [Coordinate: ShotResult]
 
 protocol PlayerState {
     func currentState(name: String, board: Board, trackingBoard: TrackingBoard)
+    func displayMessage(_ message: String)
 }
 
 final class Player {
@@ -24,6 +26,9 @@ final class Player {
             state.currentState(name: name, board: board, trackingBoard: trackingBoard)
         }
     }
+
+    private var shipCoordinates: [String: Set<Coordinate>] = [:]
+    private var hitCoordinates: Set<Coordinate> = []
 
     init(name: String, state: any PlayerState) {
         self.name = name
@@ -43,8 +48,10 @@ final class Player {
         )
 
         for coordinate in coordinates {
-            try placeShip(at: coordinate)
+            try placeShip(name: ship.name, at: coordinate)
         }
+
+        shipCoordinates[ship.name, default: []].formUnion(coordinates)
     }
 
     func value(at coordinate: Coordinate) -> CellValue {
@@ -52,18 +59,46 @@ final class Player {
     }
 
     func receiveShot(at coordinate: Coordinate) -> ShotResult {
-        value(at: coordinate) == .ship ? .hit : .miss
+        switch value(at: coordinate) {
+        case .water:
+            return .miss
+        case let .ship(shipName):
+            hitCoordinates.insert(coordinate)
+            if let coords = shipCoordinates[shipName],
+               coords.isSubset(of: hitCoordinates) {
+                return .sunk(shipName: shipName)
+            }
+            return .hit
+        }
     }
 
     func recordShot(at coordinate: Coordinate, result: ShotResult) {
         trackingBoard[coordinate] = result
     }
 
-    private func placeShip(at coordinate: Coordinate) throws {
+    func recordSunkShip(name: String, coordinates: Set<Coordinate>) {
+        for coord in coordinates {
+            trackingBoard[coord] = .sunk(shipName: name)
+        }
+    }
+
+    func coordinatesForShip(named name: String) -> Set<Coordinate> {
+        shipCoordinates[name] ?? []
+    }
+
+    func displayMessage(_ message: String) {
+        state.displayMessage(message)
+    }
+
+    var totalShipCount: Int {
+        shipCoordinates.count
+    }
+
+    private func placeShip(name: String, at coordinate: Coordinate) throws {
         guard value(at: coordinate) == .water else {
             throw PlacementError.overlappingShips
         }
-        board[coordinate] = .ship
+        board[coordinate] = .ship(name: name)
     }
 
     private func coordinatesForShipPlacement(
@@ -106,9 +141,29 @@ final class BattleshipGame {
         self.player2 = player2
     }
 
+    private var sunkShipCount: Int = 0
+
     func fire(at coordinate: Coordinate) -> ShotResult {
         let result = player2.receiveShot(at: coordinate)
         player1.recordShot(at: coordinate, result: result)
+
+        if case let .sunk(shipName) = result {
+            let coords = player2.coordinatesForShip(named: shipName)
+            player1.recordSunkShip(name: shipName, coordinates: coords)
+
+            sunkShipCount += 1
+            let remaining = player2.totalShipCount - sunkShipCount
+
+            player1.displayMessage("You sank the enemy \(shipName)!")
+            player1.displayMessage("Enemy ships remaining: \(remaining)")
+
+            if remaining == 0 {
+                player1.displayMessage(
+                    "All enemy ships destroyed -- you win!",
+                )
+            }
+        }
+
         return result
     }
 }

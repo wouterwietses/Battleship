@@ -1,11 +1,9 @@
+@testable import Battleship
 import Testing
 
-@testable import Battleship
-
-@Suite("As a player I want to see an empty game board So that I can visualize the battlefield")
 struct EmptyBoardTests {
     @Test("Should display water at location:", arguments: XAxis.allCases, YAxis.allCases)
-    func shouldDisplayWaterAtLocationA1(xAxis: XAxis, yAxis: YAxis) async throws {
+    func shouldDisplayWaterAtLocationA1(xAxis: XAxis, yAxis: YAxis) {
         let board = BattleshipBoard(playerName: "")
 
         let value = board.value(at: Coordinate(x: xAxis, y: yAxis))
@@ -13,21 +11,20 @@ struct EmptyBoardTests {
     }
 
     @Test("Should display player name")
-    func shouldDisplayPlayerName() async throws {
+    func shouldDisplayPlayerName() {
         let board = BattleshipBoard(playerName: "Player 1")
 
         #expect(board.playerName == "Player 1")
     }
 }
 
-struct PlaceShipArguments: Sendable {
+struct PlaceShipArguments {
     let ship: any Ship
     let coordinate: Coordinate
     let orientation: Orientation
     let expectedCoordinates: [Coordinate]
 }
 
-@Suite("As a player I want to place my fleet on the board So that I can prepare for battle")
 struct PlaceShipsTests {
     @Test(
         "Should place ship on the board",
@@ -86,7 +83,7 @@ struct PlaceShipsTests {
             )
         ],
     )
-    func placeCarrier(arguments: PlaceShipArguments) async throws {
+    func placeCarrier(arguments: PlaceShipArguments) throws {
         let board = BattleshipBoard(playerName: "Player 1")
 
         try board.place(
@@ -95,7 +92,7 @@ struct PlaceShipsTests {
 
         for coordinate in arguments.expectedCoordinates {
             let value = board.value(at: coordinate)
-            #expect(value == .ship)
+            #expect(value != .water)
         }
     }
 
@@ -103,7 +100,7 @@ struct PlaceShipsTests {
         "Should not place ship out of bounds",
         arguments: [Orientation.horizontal, Orientation.vertical],
     )
-    func shouldNotPlaceShipOutOfBounds(orientation: Orientation) async throws {
+    func shouldNotPlaceShipOutOfBounds(orientation: Orientation) throws {
         let board = BattleshipBoard(playerName: "Player 1")
 
         #expect(throws: PlacementError.outOfBounds) {
@@ -115,7 +112,7 @@ struct PlaceShipsTests {
         }
     }
 
-    @Test func shipsShouldNotOverlap() async throws {
+    @Test func shipsShouldNotOverlap() throws {
         let board = BattleshipBoard(playerName: "Player 1")
 
         try board.place(

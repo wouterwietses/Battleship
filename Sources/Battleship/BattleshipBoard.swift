@@ -167,8 +167,9 @@ extension Coordinate {
     static let J10 = Coordinate(x: .ten, y: .J)
 }
 
-enum CellValue {
-    case water, ship
+enum CellValue: Equatable {
+    case water
+    case ship(name: String)
 }
 
 enum Orientation {
@@ -192,11 +193,11 @@ final class BattleshipBoard {
         grid[coordinate] ?? .water
     }
 
-    private func placeShip(at coordinate: Coordinate) throws {
+    private func placeShip(name: String, at coordinate: Coordinate) throws {
         guard value(at: coordinate) == .water else {
             throw PlacementError.overlappingShips
         }
-        grid[coordinate] = .ship
+        grid[coordinate] = .ship(name: name)
     }
 
     func place(ship: any Ship, at coordinate: Coordinate, orientation: Orientation) throws {
@@ -207,7 +208,7 @@ final class BattleshipBoard {
         )
 
         for coordinate in coordinates {
-            try placeShip(at: coordinate)
+            try placeShip(name: ship.name, at: coordinate)
         }
     }
 
