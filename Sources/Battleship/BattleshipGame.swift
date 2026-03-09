@@ -3,22 +3,8 @@ enum ShotResult {
     case hit
 }
 
-// protocol Board {
-//     var grid: [Coordinate: CellValue] { get set }
-// }
-
 typealias Board = [Coordinate: CellValue]
 typealias TrackingBoard = [Coordinate: ShotResult]
-
-// protocol TrackingBoard {
-//     var grid: [Coordinate: ShotResult] { get set }
-// }
-
-// protocol PlayerOutput {
-//     var name: String { get }
-//     var board: Board { get }
-//     var trackingBoard: TrackingBoard { get }
-// }
 
 protocol PlayerState {
     func currentState(name: String, board: Board, trackingBoard: TrackingBoard)
@@ -111,18 +97,6 @@ final class Player {
     }
 }
 
-// final class GamePlayer: Player {
-//     let name: String
-//     let board: any Board
-//     let trackingBoard: any TrackingBoard
-
-//     init(name: String, board: any Board, trackingBoard: any TrackingBoard) {
-//         self.name = name
-//         self.board = board
-//         self.trackingBoard = trackingBoard
-//     }
-// }
-
 final class BattleshipGame {
     private let player1: Player
     private let player2: Player
@@ -131,47 +105,6 @@ final class BattleshipGame {
         self.player1 = player1
         self.player2 = player2
     }
-
-    // private func coordinatesForShipPlacement(
-    //     ship: any Ship,
-    //     at coordinate: Coordinate,
-    //     orientation: Orientation,
-    // ) throws -> [Coordinate] {
-    //     var coordinates: [Coordinate] = []
-
-    //     for lengthIndex in 0..<ship.length {
-    //         switch orientation {
-    //         case .horizontal:
-    //             guard let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) else {
-    //                 throw PlacementError.outOfBounds
-    //             }
-    //             coordinates.append(Coordinate(x: newX, y: coordinate.y))
-    //         case .vertical:
-    //             let allYAxes = YAxis.allCases
-    //             guard let currentIndex = allYAxes.firstIndex(of: coordinate.y),
-    //                 currentIndex + lengthIndex < allYAxes.count
-    //             else {
-    //                 throw PlacementError.outOfBounds
-    //             }
-
-    //             let newY = allYAxes[currentIndex + lengthIndex]
-    //             coordinates.append(Coordinate(x: coordinate.x, y: newY))
-    //         }
-    //     }
-
-    //     return coordinates
-    // }
-
-    // func value(at coordinate: Coordinate) -> CellValue {
-    //     grid[coordinate] ?? .water
-    // }
-
-    // private func placeShip(at coordinate: Coordinate) throws {
-    //     guard value(at: coordinate) == .water else {
-    //         throw PlacementError.overlappingShips
-    //     }
-    //     grid[coordinate] = .ship
-    // }
 
     func fire(at coordinate: Coordinate) -> ShotResult {
         let result = player2.receiveShot(at: coordinate)

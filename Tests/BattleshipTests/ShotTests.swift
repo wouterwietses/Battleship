@@ -50,15 +50,6 @@ struct ShotTests {
             player1: player1,
             player2: Player(name: "Player 2", state: MockPlayerState()),
         )
-        // try player1.place(ship: Carrier(), at: Coordinate(x: .one, y: .A), orientation: .horizontal)
-        // try player1.place(
-        //     ship: Battleship(), at: Coordinate(x: .one, y: .B), orientation: .horizontal,
-        // )
-        // try player1.place(ship: Cruiser(), at: Coordinate(x: .one, y: .C), orientation: .horizontal)
-        // try player1.place(
-        //     ship: Submarine(), at: Coordinate(x: .one, y: .D), orientation: .horizontal)
-        // try player1.place(
-        //     ship: Destroyer(), at: Coordinate(x: .one, y: .E), orientation: .horizontal)
 
         let result = game.fire(at: Coordinate(x: .five, y: .B))
         #expect(result == .miss)

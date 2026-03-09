@@ -17,19 +17,7 @@ enum YAxis: CaseIterable {
     // swiftlint:enable identifier_name
 
     static func from(_ string: String) -> YAxis? {
-        switch string {
-        case "A": .A
-        case "B": .B
-        case "C": .C
-        case "D": .D
-        case "E": .E
-        case "F": .F
-        case "G": .G
-        case "H": .H
-        case "I": .I
-        case "J": .J
-        default: nil
-        }
+        allCases.first { String(describing: $0) == string }
     }
 }
 
@@ -195,7 +183,6 @@ final class BattleshipBoard {
     let playerName: String
 
     private var grid: [Coordinate: CellValue] = [:]
-    private var trackingGrid: [Coordinate: ShotResult] = [:]
 
     init(playerName: String) {
         self.playerName = playerName
@@ -203,10 +190,6 @@ final class BattleshipBoard {
 
     func value(at coordinate: Coordinate) -> CellValue {
         grid[coordinate] ?? .water
-    }
-
-    func trackingBoardValue(at _: Coordinate) -> ShotResult? {
-        .miss
     }
 
     private func placeShip(at coordinate: Coordinate) throws {
