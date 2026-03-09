@@ -41,14 +41,14 @@ final class Player {
     func place(
         ship: any Ship, at coordinate: Coordinate, orientation: Orientation,
     ) throws {
-        let coordinates = try coordinatesForShipPlacement(
-            ship: ship,
+        let coordinates = try ShipPlacer.coordinates(
+            for: ship,
             at: coordinate,
             orientation: orientation,
         )
 
-        for coordinate in coordinates {
-            try placeShip(name: ship.name, at: coordinate)
+        for coord in coordinates {
+            try placeShip(name: ship.name, at: coord)
         }
 
         shipCoordinates[ship.name, default: []].formUnion(coordinates)
@@ -99,35 +99,5 @@ final class Player {
             throw PlacementError.overlappingShips
         }
         board[coordinate] = .ship(name: name)
-    }
-
-    private func coordinatesForShipPlacement(
-        ship: any Ship,
-        at coordinate: Coordinate,
-        orientation: Orientation,
-    ) throws -> [Coordinate] {
-        var coordinates: [Coordinate] = []
-
-        for lengthIndex in 0 ..< ship.length {
-            switch orientation {
-            case .vertical:
-                guard let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) else {
-                    throw PlacementError.outOfBounds
-                }
-                coordinates.append(Coordinate(x: newX, y: coordinate.y))
-            case .horizontal:
-                let allYAxes = YAxis.allCases
-                guard let currentIndex = allYAxes.firstIndex(of: coordinate.y),
-                      currentIndex + lengthIndex < allYAxes.count
-                else {
-                    throw PlacementError.outOfBounds
-                }
-
-                let newY = allYAxes[currentIndex + lengthIndex]
-                coordinates.append(Coordinate(x: coordinate.x, y: newY))
-            }
-        }
-
-        return coordinates
     }
 }

@@ -32,44 +32,18 @@ final class BattleshipBoard {
     }
 
     func place(ship: any Ship, at coordinate: Coordinate, orientation: Orientation) throws {
-        let coordinates = try coordinatesForShipPlacement(
-            ship: ship,
+        // Note: BattleshipBoard uses inverted orientation semantics
+        // (horizontal expands rows, vertical expands columns).
+        // This flips to match ShipPlacer's correct semantics.
+        let flippedOrientation: Orientation = orientation == .horizontal ? .vertical : .horizontal
+        let coordinates = try ShipPlacer.coordinates(
+            for: ship,
             at: coordinate,
-            orientation: orientation,
+            orientation: flippedOrientation,
         )
 
-        for coordinate in coordinates {
-            try placeShip(name: ship.name, at: coordinate)
+        for coord in coordinates {
+            try placeShip(name: ship.name, at: coord)
         }
-    }
-
-    private func coordinatesForShipPlacement(
-        ship: any Ship,
-        at coordinate: Coordinate,
-        orientation: Orientation,
-    ) throws -> [Coordinate] {
-        var coordinates: [Coordinate] = []
-
-        for lengthIndex in 0 ..< ship.length {
-            switch orientation {
-            case .horizontal:
-                guard let newX = XAxis(rawValue: coordinate.x.rawValue + lengthIndex) else {
-                    throw PlacementError.outOfBounds
-                }
-                coordinates.append(Coordinate(x: newX, y: coordinate.y))
-            case .vertical:
-                let allYAxes = YAxis.allCases
-                guard let currentIndex = allYAxes.firstIndex(of: coordinate.y),
-                      currentIndex + lengthIndex < allYAxes.count
-                else {
-                    throw PlacementError.outOfBounds
-                }
-
-                let newY = allYAxes[currentIndex + lengthIndex]
-                coordinates.append(Coordinate(x: coordinate.x, y: newY))
-            }
-        }
-
-        return coordinates
     }
 }
